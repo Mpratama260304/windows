@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+# ═══════════════════════════════════════════════════════════════════════════════
+# entry.sh - Windows VM Container Entrypoint
+# ═══════════════════════════════════════════════════════════════════════════════
+# This is the main entrypoint for the Windows container with nested
+# virtualization support. It orchestrates the VM initialization and launch.
+# ═══════════════════════════════════════════════════════════════════════════════
 set -Eeuo pipefail
 
 : "${APP:="Windows"}"
@@ -6,7 +12,14 @@ set -Eeuo pipefail
 : "${BOOT_MODE:="windows"}"
 : "${SUPPORT:="https://github.com/dockur/windows"}"
 
+# Initialize ARGS variable for QEMU arguments
+ARGS=""
+
 cd /run
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Initialization Phase
+# ═══════════════════════════════════════════════════════════════════════════════
 
 . start.sh      # Startup hook
 . utils.sh      # Load functions
@@ -15,15 +28,20 @@ cd /run
 . define.sh     # Define versions
 . mido.sh       # Download Windows
 . install.sh    # Run installation
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# QEMU Configuration Phase
+# ═══════════════════════════════════════════════════════════════════════════════
+
 . disk.sh       # Initialize disks
-. display.sh    # Initialize graphics
-. network.sh    # Initialize network
-. samba.sh      # Configure samba
-. boot.sh       # Configure boot
-. proc.sh       # Initialize processor
+. display.sh    # Initialize graphics (VNC/noVNC)
+. network.sh    # Initialize network (RDP forwarding)
+. samba.sh      # Configure samba shares
+. boot.sh       # Configure UEFI/BIOS boot
+. proc.sh       # Initialize processor (KVM, VMX/SVM, Hyper-V)
 . power.sh      # Configure shutdown
-. memory.sh     # Check available memory
-. config.sh     # Configure arguments
+. memory.sh     # Configure memory allocation
+. config.sh     # Finalize QEMU arguments
 . finish.sh     # Finish initialization
 
 trap - ERR
