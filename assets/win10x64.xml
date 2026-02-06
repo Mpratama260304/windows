@@ -436,6 +436,41 @@
           <CommandLine>cmd /C if exist "C:\OEM\install.bat" start "Install" "cmd /C C:\OEM\install.bat"</CommandLine>
           <Description>Execute custom script from the OEM folder if exists</Description>
         </SynchronousCommand>
+        <!-- ═══════════════════════════════════════════════════════════════════════ -->
+        <!-- NESTED VIRTUALIZATION / HYPER-V ENABLEMENT                              -->
+        <!-- These commands enable Hyper-V and related features for Android emulator -->
+        <!-- A reboot is required after these features are enabled                   -->
+        <!-- ═══════════════════════════════════════════════════════════════════════ -->
+        <SynchronousCommand wcm:action="add">
+          <Order>25</Order>
+          <CommandLine>powershell.exe -ExecutionPolicy Bypass -NoLogo -NoProfile -NonInteractive -Command "try { Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All -NoRestart -ErrorAction SilentlyContinue } catch { Write-Host 'Hyper-V not available' }"</CommandLine>
+          <Description>Enable Hyper-V (if virtualization available)</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>26</Order>
+          <CommandLine>powershell.exe -ExecutionPolicy Bypass -NoLogo -NoProfile -NonInteractive -Command "try { Enable-WindowsOptionalFeature -Online -FeatureName HypervisorPlatform -NoRestart -ErrorAction SilentlyContinue } catch { Write-Host 'HypervisorPlatform not available' }"</CommandLine>
+          <Description>Enable Windows Hypervisor Platform (WHPX for Android)</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>27</Order>
+          <CommandLine>powershell.exe -ExecutionPolicy Bypass -NoLogo -NoProfile -NonInteractive -Command "try { Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -NoRestart -ErrorAction SilentlyContinue } catch { Write-Host 'VirtualMachinePlatform not available' }"</CommandLine>
+          <Description>Enable Virtual Machine Platform</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>28</Order>
+          <CommandLine>powershell.exe -ExecutionPolicy Bypass -NoLogo -NoProfile -NonInteractive -Command "try { Enable-WindowsOptionalFeature -Online -FeatureName Containers -NoRestart -ErrorAction SilentlyContinue } catch { Write-Host 'Containers not available' }"</CommandLine>
+          <Description>Enable Windows Containers</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>29</Order>
+          <CommandLine>reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization" /v MinVmVersionForCpuBasedMitigations /t REG_SZ /d "1.0" /f</CommandLine>
+          <Description>Configure virtualization mitigations</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>30</Order>
+          <CommandLine>bcdedit /set hypervisorschedulertype classic</CommandLine>
+          <Description>Set hypervisor scheduler type for better nested virt compatibility</Description>
+        </SynchronousCommand>
       </FirstLogonCommands>
     </component>
   </settings>

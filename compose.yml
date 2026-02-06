@@ -4,16 +4,48 @@ services:
     container_name: windows
     environment:
       VERSION: "11"
+      # ═══════════════════════════════════════════════════════════════════════
+      # NESTED VIRTUALIZATION SETTINGS
+      # ═══════════════════════════════════════════════════════════════════════
+      # Enable VMX/SVM passthrough for nested virtualization
+      # This allows Windows to see virtualization extensions and run:
+      # - Android Emulator (WHPX/Hyper-V backend)
+      # - Hyper-V VMs
+      # - Docker Desktop with Hyper-V
+      # - WSL2 with virtualization
+      VMX: "Y"
+      # Enable Hyper-V enlightenments for better Windows VM performance
+      HV: "Y"
+      # ═══════════════════════════════════════════════════════════════════════
+      # RESOURCE CONFIGURATION
+      # ═══════════════════════════════════════════════════════════════════════
+      RAM_SIZE: "8G"
+      CPU_CORES: "4"
+      DISK_SIZE: "64G"
+      # ═══════════════════════════════════════════════════════════════════════
+      # AUTHENTICATION
+      # ═══════════════════════════════════════════════════════════════════════
+      USERNAME: "Admin"
+      PASSWORD: "Anonymous263"
     devices:
       - /dev/kvm
       - /dev/net/tun
     cap_add:
       - NET_ADMIN
     ports:
+      # noVNC web access
       - 8006:8006
+      # RDP access
       - 3389:3389/tcp
       - 3389:3389/udp
     volumes:
       - ./windows:/storage
+      # Optional: Mount OEM folder for custom scripts (auto-executed on first boot)
+      - ./oem:/oem
     restart: always
     stop_grace_period: 2m
+    # Sufficient shared memory for QEMU operations
+    shm_size: 1g
+    # Relaxed security for nested virtualization
+    security_opt:
+      - seccomp:unconfined

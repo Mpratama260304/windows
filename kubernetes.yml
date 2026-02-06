@@ -34,6 +34,26 @@ spec:
           value: "11"
         - name: DISK_SIZE
           value: "64G"
+        - name: RAM_SIZE
+          value: "8G"
+        - name: CPU_CORES
+          value: "4"
+        # ═══════════════════════════════════════════════════════════════════════
+        # NESTED VIRTUALIZATION SETTINGS
+        # ═══════════════════════════════════════════════════════════════════════
+        # Enable VMX/SVM passthrough for nested virtualization
+        - name: VMX
+          value: "Y"
+        # Enable Hyper-V enlightenments for better Windows VM performance
+        - name: HV
+          value: "Y"
+        # ═══════════════════════════════════════════════════════════════════════
+        # AUTHENTICATION
+        # ═══════════════════════════════════════════════════════════════════════
+        - name: USERNAME
+          value: "Admin"
+        - name: PASSWORD
+          value: "Anonymous263"
         ports:
           - containerPort: 8006
             name: http

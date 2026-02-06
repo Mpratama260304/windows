@@ -345,6 +345,36 @@
           <CommandLine>cmd /C if exist "C:\OEM\install.bat" start "Install" "cmd /C C:\OEM\install.bat"</CommandLine>
           <Description>Execute custom script from the OEM folder if exists</Description>
         </SynchronousCommand>
+        <!-- ═══════════════════════════════════════════════════════════════════════ -->
+        <!-- NESTED VIRTUALIZATION / HYPER-V ENABLEMENT (Windows Server)            -->
+        <!-- These commands install the Hyper-V role for nested virtualization      -->
+        <!-- A reboot is required after these features are installed                -->
+        <!-- ═══════════════════════════════════════════════════════════════════════ -->
+        <SynchronousCommand wcm:action="add">
+          <Order>24</Order>
+          <CommandLine>powershell.exe -ExecutionPolicy Bypass -NoLogo -NoProfile -NonInteractive -Command "try { Install-WindowsFeature -Name Hyper-V -IncludeManagementTools -ErrorAction SilentlyContinue } catch { Write-Host 'Hyper-V not available' }"</CommandLine>
+          <Description>Install Hyper-V role (if virtualization available)</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>25</Order>
+          <CommandLine>powershell.exe -ExecutionPolicy Bypass -NoLogo -NoProfile -NonInteractive -Command "try { Install-WindowsFeature -Name Hyper-V-PowerShell -ErrorAction SilentlyContinue } catch { Write-Host 'Hyper-V PowerShell not available' }"</CommandLine>
+          <Description>Install Hyper-V PowerShell tools</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>26</Order>
+          <CommandLine>powershell.exe -ExecutionPolicy Bypass -NoLogo -NoProfile -NonInteractive -Command "try { Install-WindowsFeature -Name Containers -ErrorAction SilentlyContinue } catch { Write-Host 'Containers not available' }"</CommandLine>
+          <Description>Install Windows Containers feature</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>27</Order>
+          <CommandLine>reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization" /v MinVmVersionForCpuBasedMitigations /t REG_SZ /d "1.0" /f</CommandLine>
+          <Description>Configure virtualization mitigations</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>28</Order>
+          <CommandLine>bcdedit /set hypervisorschedulertype classic</CommandLine>
+          <Description>Set hypervisor scheduler type for better nested virt compatibility</Description>
+        </SynchronousCommand>
       </FirstLogonCommands>
     </component>
   </settings>

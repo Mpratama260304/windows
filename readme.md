@@ -19,6 +19,27 @@ Windows inside a Docker container.
  - ISO downloader
  - KVM acceleration
  - Web-based viewer
+ - **Nested Virtualization** - Run Android Emulator, Hyper-V, Docker Desktop inside Windows
+
+## Nested Virtualization 🔄
+
+This fork enables **nested virtualization**, allowing Windows to run:
+- **Android Emulator** with WHPX/Hyper-V backend
+- **Hyper-V** virtual machines
+- **Docker Desktop** with Hyper-V backend
+- **WSL2** with virtualization features
+
+### Quick Setup for Nested Virtualization
+
+Add these environment variables to enable VMX/SVM passthrough:
+
+```yaml
+environment:
+  VMX: "Y"    # Enable VMX/SVM passthrough
+  HV: "Y"     # Enable Hyper-V enlightenments
+```
+
+Full documentation: [README-NESTED.md](README-NESTED.md)
 
 ## Video 📺
 
